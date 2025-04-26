@@ -7,8 +7,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { getHomePage } from "@/lib/api";
 
-export default function Home() {
+export default async function Home() {
+  const page = await getHomePage();
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -68,66 +71,48 @@ export default function Home() {
         <div className="grid gap-8 md:grid-cols-2">
           <div className="flex flex-col justify-center">
             <h1 className="mb-6 text-5xl font-bold text-[#02342E]">
-              Empowering every Student with personalized learning for lasting
-              success
+              {page.hero.heading}
             </h1>
+            {page.hero.subheading && (
+              <p className="mb-8 text-lg text-gray-600">{page.hero.subheading}</p>
+            )}
             <div className="mb-8 space-y-4">
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-5 w-5 text-[#02342E]"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <p>Personalized, efficient learning</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-5 w-5 text-[#02342E]"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <p>Deep collaboration with parents & students</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-5 w-5 text-[#02342E]"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <p>Personalized One-on-One Learning</p>
-              </div>
+              {page.features.map((feature, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <svg
+                    className="h-5 w-5 text-[#02342E]"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p>{feature.description}</p>
+                </div>
+              ))}
             </div>
-            <Button className="w-fit rounded-full bg-[#02342E] px-8 py-6 text-white hover:bg-[#02342E]/90">
-              Get Started Today
-            </Button>
+            {page.hero.ctaText && page.hero.ctaLink && (
+              <Link href={page.hero.ctaLink}>
+                <Button className="w-fit rounded-full bg-[#02342E] px-8 py-6 text-white hover:bg-[#02342E]/90">
+                  {page.hero.ctaText}
+                </Button>
+              </Link>
+            )}
           </div>
-          <div className="relative">
-            <Image
-              src="/photo1.png.png"
-              alt="Student learning"
-              width={600}
-              height={400}
-              className="rounded-lg object-cover"
-            />
-          </div>
+          {page.hero.image && (
+            <div className="relative">
+              <Image
+                src={page.hero.image.url}
+                alt={page.hero.image.alt || "Hero image"}
+                width={600}
+                height={400}
+                className="rounded-lg object-cover"
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -142,161 +127,19 @@ export default function Home() {
             step of the way.
           </p>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-lg border p-6">
-              <div className="mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#02342E]"
-                >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
+            {page.supportSections.map((section, index) => (
+              <div key={index} className="rounded-lg border p-6">
+                <div className="mb-4">
+                  {section.icon && (
+                    <div dangerouslySetInnerHTML={{ __html: section.icon }} />
+                  )}
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
+                  {section.title}
+                </h3>
+                <p className="text-sm text-gray-600">{section.description}</p>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
-                Test Prep
-              </h3>
-              <p className="text-sm text-gray-600">
-                Expert coaching for SSAT, SAT, ACT, AP exams, and more.
-              </p>
-            </div>
-            <div className="rounded-lg border p-6">
-              <div className="mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#02342E]"
-                >
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                </svg>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
-                College/University
-              </h3>
-              <p className="text-sm text-gray-600">
-                Tutoring for advanced coursework, writing, and academic
-                strategy.
-              </p>
-            </div>
-            <div className="rounded-lg border p-6">
-              <div className="mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#02342E]"
-                >
-                  <path d="M12 20h9"></path>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                </svg>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
-                Graduate School
-              </h3>
-              <p className="text-sm text-gray-600">
-                Language prep, writing mentorship, and exam support for advanced
-                learners.
-              </p>
-            </div>
-            <div className="rounded-lg border p-6">
-              <div className="mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#02342E]"
-                >
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
-                Elementary School
-              </h3>
-              <p className="text-sm text-gray-600">
-                Foundational support in reading, writing, math, and study
-                habits.
-              </p>
-            </div>
-            <div className="rounded-lg border p-6">
-              <div className="mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#02342E]"
-                >
-                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                  <line x1="8" y1="21" x2="16" y2="21"></line>
-                  <line x1="12" y1="17" x2="12" y2="21"></line>
-                </svg>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
-                Middle School
-              </h3>
-              <p className="text-sm text-gray-600">
-                Skill-building across core subjects to support academic
-                transitions.
-              </p>
-            </div>
-            <div className="rounded-lg border p-6">
-              <div className="mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#02342E]"
-                >
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                </svg>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-[#02342E]">
-                High School
-              </h3>
-              <p className="text-sm text-gray-600">
-                Rigorous subject support, test prep, and college readiness.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
